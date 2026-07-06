@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>はもと加工場 統合管理システム 完成イメージ</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:"Hiragino Sans","Yu Gothic",Meiryo,sans-serif; }
+  body { background:#eef2f6; color:#1a2b3c; }
+  .banner { background:#0d4f8b; color:#fff; padding:14px 24px; display:flex; justify-content:space-between; align-items:center; }
+  .banner h1 { font-size:20px; }
+  .banner .tag { background:#ffd400; color:#333; font-size:12px; font-weight:bold; padding:4px 10px; border-radius:4px; }
+  .tabs { display:flex; background:#fff; border-bottom:3px solid #0d4f8b; }
+  .tab { flex:1; padding:16px 8px; text-align:center; font-size:16px; font-weight:bold; cursor:pointer; color:#667; border:none; background:#fff; }
+  .tab.active { background:#0d4f8b; color:#fff; }
+  .page { display:none; padding:20px; max-width:1100px; margin:0 auto; }
+  .page.active { display:block; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin-bottom:20px; }
+  .card { background:#fff; border-radius:10px; padding:18px; box-shadow:0 1px 4px rgba(0,0,0,.08); }
+  .card .label { font-size:14px; color:#667; margin-bottom:6px; }
+  .card .value { font-size:32px; font-weight:bold; }
+  .card .sub { font-size:13px; color:#889; margin-top:4px; }
+  .ok { color:#1a8a3c; } .warn { color:#d97706; } .bad { color:#dc2626; }
+  .section { background:#fff; border-radius:10px; padding:20px; box-shadow:0 1px 4px rgba(0,0,0,.08); margin-bottom:20px; }
+  .section h2 { font-size:17px; margin-bottom:14px; border-left:5px solid #0d4f8b; padding-left:10px; }
+  table { width:100%; border-collapse:collapse; font-size:15px; }
+  th { background:#f0f4f8; padding:10px; text-align:left; font-size:13px; color:#556; }
+  td { padding:10px; border-bottom:1px solid #eef; }
+  .pill { display:inline-block; padding:3px 12px; border-radius:99px; font-size:13px; font-weight:bold; }
+  .pill.g { background:#dcfce7; color:#166534; } .pill.y { background:#fef3c7; color:#92400e; } .pill.r { background:#fee2e2; color:#991b1b; } .pill.b { background:#dbeafe; color:#1e40af; }
+  .bars { display:flex; align-items:flex-end; gap:14px; height:150px; padding-top:10px; }
+  .bar { flex:1; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; gap:6px; }
+  .bar .col { width:70%; background:#7fb3e0; border-radius:4px 4px 0 0; }
+  .bar.now .col { background:#0d4f8b; }
+  .bar span { font-size:12px; color:#667; }
+  /* 現場入力 */
+  .tablet { max-width:560px; margin:0 auto; background:#fff; border:10px solid #333; border-radius:24px; padding:24px; }
+  .tablet h3 { text-align:center; font-size:20px; margin-bottom:4px; }
+  .tablet .time { text-align:center; color:#889; font-size:14px; margin-bottom:18px; }
+  .bigbtn { display:block; width:100%; padding:20px; font-size:22px; font-weight:bold; border:none; border-radius:12px; margin-bottom:14px; cursor:pointer; }
+  .bb-blue { background:#0d4f8b; color:#fff; }
+  .bb-line { background:#fff; color:#0d4f8b; border:3px solid #0d4f8b; }
+  .num-display { text-align:center; font-size:52px; font-weight:bold; padding:14px; background:#f0f6fc; border-radius:12px; margin-bottom:8px; }
+  .judge { text-align:center; font-size:18px; font-weight:bold; padding:10px; border-radius:8px; margin-bottom:16px; }
+  .keypad { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+  .keypad button { padding:18px; font-size:26px; font-weight:bold; border:1px solid #cbd5e1; border-radius:10px; background:#fff; cursor:pointer; }
+  .keypad button:active { background:#dbeafe; }
+  .steps { font-size:13px; color:#889; text-align:center; margin-bottom:12px; }
+  /* フロー */
+  .flow { display:flex; flex-direction:column; gap:0; align-items:center; }
+  .flowrow { display:flex; gap:12px; width:100%; justify-content:center; flex-wrap:wrap; }
+  .fbox { background:#fff; border:2px solid #0d4f8b; border-radius:10px; padding:14px 16px; width:190px; text-align:center; }
+  .fbox b { display:block; font-size:16px; color:#0d4f8b; margin-bottom:6px; }
+  .fbox small { font-size:12px; color:#667; line-height:1.5; display:block; text-align:left; }
+  .arrowdown { font-size:26px; color:#0d4f8b; text-align:center; padding:4px 0; }
+  .hub { background:#0d4f8b; color:#fff; border-radius:12px; padding:18px 30px; text-align:center; margin:8px 0; }
+  .hub b { font-size:18px; } .hub small { font-size:13px; opacity:.9; display:block; margin-top:4px; }
+  .note { background:#fffbe6; border:1px solid #fde68a; border-radius:8px; padding:12px 16px; font-size:14px; margin-top:16px; line-height:1.7; }
+  .footer { text-align:center; font-size:12px; color:#99a; padding:20px; }
+  @media (max-width:640px){ .tab{font-size:13px; padding:12px 4px;} }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <h1>はもと加工場 統合管理システム</h1>
+  <span class="tag">完成イメージ(モックアップ)</span>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="show(0,this)">① ダッシュボード</button>
+  <button class="tab" onclick="show(1,this)">② 現場入力(タブレット)</button>
+  <button class="tab" onclick="show(2,this)">③ 5部門のつながり</button>
+  <button class="tab" onclick="show(3,this)">④ 商品群別の見える化</button>
+  <button class="tab" onclick="show(4,this)">⑤ マネジメント</button>
+</div>
+
+<!-- ① ダッシュボード -->
+<div class="page active" id="p0">
+  <p style="margin-bottom:14px; font-size:14px; color:#556;">経営・現場の全員が毎朝これを見れば、工場の「今日」がわかる画面です。</p>
+  <div class="cards">
+    <div class="card"><div class="label">今日の受注</div><div class="value">12<span style="font-size:16px;"> 件</span></div><div class="sub">昨日比 +3件</div></div>
+    <div class="card"><div class="label">今日の製造予定</div><div class="value">340<span style="font-size:16px;"> kg</span></div><div class="sub">はも開き ほか4品目</div></div>
+    <div class="card"><div class="label">今日の出荷</div><div class="value">8<span style="font-size:16px;"> 件</span></div><div class="sub">うち冷凍便 5件</div></div>
+    <div class="card"><div class="label">HACCP記録</div><div class="value ok">✔ 正常</div><div class="sub">CCP温度 記録漏れ 0件</div></div>
+    <div class="card"><div class="label">冷蔵庫・冷凍庫</div><div class="value warn">⚠ 1件</div><div class="sub">2号冷蔵庫 4.8℃(基準5℃)要確認</div></div>
+  </div>
+
+  <div class="section">
+    <h2>今日やること(部門横断)</h2>
+    <table>
+      <tr><th>時刻</th><th>部門</th><th>内容</th><th>状態</th></tr>
+      <tr><td>6:00</td><td>仕入</td><td>市場買付 はも80kg・カレイ40kg → 検収記録</td><td><span class="pill g">完了</span></td></tr>
+      <tr><td>8:00</td><td>製造/HACCP</td><td>加熱工程 CCP温度記録(中心温度)</td><td><span class="pill g">完了</span></td></tr>
+      <tr><td>13:00</td><td>出荷</td><td>京都市場向け 冷凍便5件 ラベル発行</td><td><span class="pill y">作業中</span></td></tr>
+      <tr><td>15:00</td><td>販売</td><td>新規:東京の卸から見積依頼 → 回答期限 明日</td><td><span class="pill b">未着手</span></td></tr>
+      <tr><td>17:00</td><td>会計</td><td>6月分 請求書発行(システムから自動作成)</td><td><span class="pill b">未着手</span></td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>月次売上(2025年実績・自動集計イメージ)</h2>
+    <div class="bars">
+      <div class="bar"><div class="col" style="height:34%"></div><span>1月<br>270万</span></div>
+      <div class="bar"><div class="col" style="height:24%"></div><span>2月<br>195万</span></div>
+      <div class="bar"><div class="col" style="height:37%"></div><span>3月<br>299万</span></div>
+      <div class="bar"><div class="col" style="height:39%"></div><span>4月<br>310万</span></div>
+      <div class="bar"><div class="col" style="height:51%"></div><span>5月<br>406万</span></div>
+      <div class="bar"><div class="col" style="height:68%"></div><span>6月<br>544万</span></div>
+      <div class="bar now"><div class="col" style="height:100%"></div><span>7月<br>799万</span></div>
+      <div class="bar now"><div class="col" style="height:91%"></div><span>8月<br>728万</span></div>
+      <div class="bar"><div class="col" style="height:59%"></div><span>9月<br>468万</span></div>
+      <div class="bar"><div class="col" style="height:47%"></div><span>10月<br>378万</span></div>
+      <div class="bar"><div class="col" style="height:48%"></div><span>11月<br>383万</span></div>
+      <div class="bar"><div class="col" style="height:74%"></div><span>12月<br>588万</span></div>
+    </div>
+    <div class="note">2025年実績:年間合計 <b>5,369万円</b>(前年4,846万・+10.8%)。ピークは7月799万・8月728万の観光シーズン、底は2月195万(約4倍の季節差)。請求・入金と自動でつながるので、<b>会計担当が売上を手で集計し直す作業がなくなります。</b>経営会議はこの画面を映すだけ。</div>
+  </div>
+
+  <div class="section">
+    <h2>魚種別 仕入 → 売上のつながり(2025年実績・商品名から推定)</h2>
+    <table>
+      <tr><th>魚種</th><th style="text-align:right;">仕入(漁協等)</th><th style="text-align:right;">売上(推定)</th><th style="text-align:center;">売上/仕入</th><th>読み方</th></tr>
+      <tr><td><b>サバ</b> <span style="font-size:12px;color:#889;">桜干し・一夜干し</span></td><td style="text-align:right;">26万</td><td style="text-align:right;"><b>596万</b></td><td style="text-align:center;"><span class="pill y">22.6倍</span></td><td style="font-size:12.5px;color:#667;">主原料の仕入がこのデータに無い(別ルート調達)→ 紐づけ不能</td></tr>
+      <tr><td><b>マハタ</b> <span style="font-size:12px;color:#889;">フィーレ・漬け丼・出汁</span></td><td style="text-align:right;">58万</td><td style="text-align:right;"><b>588万</b></td><td style="text-align:center;"><span class="pill g">10.2倍</span></td><td style="font-size:12.5px;color:#667;">加工で価値を最大化できている優等生。輸出候補の筆頭</td></tr>
+      <tr><td><b>タコ</b> <span style="font-size:12px;color:#889;">大中たこ・ボイル加工</span></td><td style="text-align:right;">418万(3,154kg)</td><td style="text-align:right;"><b>544万</b></td><td style="text-align:center;"><span class="pill r">1.3倍</span></td><td style="font-size:12.5px;color:#667;">仕入最大の魚種なのに利幅が薄い疑い。歩留まり・値付けの検証が急務</td></tr>
+      <tr><td><b>タイ(真鯛・連子鯛)</b></td><td style="text-align:right;">94万(1,246kg)</td><td style="text-align:right;"><b>438万</b></td><td style="text-align:center;"><span class="pill g">4.6倍</span></td><td style="font-size:12.5px;color:#667;">漬け丼・出汁・柵で健全な付加価値</td></tr>
+      <tr><td><b>イカ</b></td><td style="text-align:right;">81万(451kg)</td><td style="text-align:right;"><b>368万</b></td><td style="text-align:center;"><span class="pill g">4.5倍</span></td><td style="font-size:12.5px;color:#667;">刺身用・灰干しで安定</td></tr>
+      <tr><td><b>サーモン</b></td><td style="text-align:right;">160万</td><td style="text-align:right;"><b>308万</b></td><td style="text-align:center;"><span class="pill y">1.9倍</span></td><td style="font-size:12.5px;color:#667;">漬け丼主力。養殖仕入が大きく倍率は低め</td></tr>
+      <tr><td><b>グジ・甘鯛</b></td><td style="text-align:right;">118万(513kg)</td><td style="text-align:right;"><b>140万</b></td><td style="text-align:center;"><span class="pill r">1.2倍</span></td><td style="font-size:12.5px;color:#667;">高級魚なのに倍率最低。灰干し等の高付加価値化の余地大</td></tr>
+      <tr><td><b>ブリ</b></td><td style="text-align:right;">26万</td><td style="text-align:right;"><b>130万</b></td><td style="text-align:center;"><span class="pill g">5.1倍</span></td><td style="font-size:12.5px;color:#667;">フィーレ販売が好調</td></tr>
+      <tr><td style="color:#889;">仕入のみで売上に出ない魚種</td><td style="text-align:right;">約100万</td><td style="text-align:right;">—</td><td style="text-align:center;"><span class="pill b">不明</span></td><td style="font-size:12.5px;color:#667;">ウマヅラハギ30万・フグ18万・カニ13万ほか → 在庫か、商品名から追えないか</td></tr>
+      <tr><td style="color:#889;">上記以外の魚種</td><td style="text-align:right;">約173万</td><td style="text-align:right;">約496万</td><td style="text-align:center;"><span class="pill b">—</span></td><td style="font-size:12.5px;color:#667;">アジ(45万→148万)・アナゴ(40万→82万)・カレイ(22万→80万)・イワシ・サワラ・ハタハタほか</td></tr>
+      <tr style="background:#f0f6fc; border-top:2px solid #0d4f8b;"><td><b>合計(2025年)</b></td><td style="text-align:right;"><b>仕入 1,354万円</b><br><span style="font-size:11px;color:#889;">全魚種・漁協等</span></td><td style="text-align:right;"><b>売上 約3,610万円</b><br><span style="font-size:11px;color:#889;">魚種に紐づけできた分(全売上の67%)</span></td><td style="text-align:center;"><span class="pill g">平均 2.7倍</span></td><td style="font-size:12.5px;color:#667;">参考:2024年仕入は1,810万(前年比-25%)。仕入減でも売上+10.8% = 加工品・仕入外原料へのシフト</td></tr>
+    </table>
+    <div class="note" style="margin-top:12px;"><b>この表の限界こそが課題:</b>今回は商品名の文字から魚種を「推測」してつなげました(売上の67%しか紐づけできず、倍率22倍・不明などの穴が残る)。システム導入後は<b>仕入→原料ロット→製品→売上が自動で正確に紐づく</b>ため、この表が毎日・正確に出ます。タコの薄利疑い、グジの低倍率、売上に出ない仕入100万の行方 — 全部その場で答えが出るようになります。</div>
+  </div>
+</div>
+
+<!-- ② 現場入力 -->
+<div class="page" id="p1">
+  <p style="margin-bottom:14px; font-size:14px; color:#556; text-align:center;">現場に置くタブレットの画面。<b>3タップで記録完了</b>、紙の記録簿は不要になります。</p>
+  <div class="tablet">
+    <h3>加熱工程 中心温度の記録(CCP)</h3>
+    <div class="time" id="clock">7月4日(土) 8:02</div>
+    <div class="steps">① 品目を選ぶ → ② 温度を入れる → ③ 記録ボタン</div>
+    <button class="bigbtn bb-line">品目:はも湯引き(ロット 0704-A)▼</button>
+    <div class="num-display"><span id="temp">75.5</span> ℃</div>
+    <div class="judge" id="judge" style="background:#dcfce7; color:#166534;">✔ 基準クリア(75℃以上・1分)</div>
+    <div class="keypad">
+      <button onclick="key('7')">7</button><button onclick="key('8')">8</button><button onclick="key('9')">9</button>
+      <button onclick="key('4')">4</button><button onclick="key('5')">5</button><button onclick="key('6')">6</button>
+      <button onclick="key('1')">1</button><button onclick="key('2')">2</button><button onclick="key('3')">3</button>
+      <button onclick="key('.')">・</button><button onclick="key('0')">0</button><button onclick="key('C')" style="color:#dc2626;">消す</button>
+    </div>
+    <button class="bigbtn bb-blue" onclick="save()">この内容で記録する</button>
+    <div class="note" style="margin-top:8px;">基準を外れると<b>その場で赤く警告</b>し、責任者のスマホに自動通知。担当者名・時刻は自動で記録されるので、書き忘れ・改ざんの心配がありません。この記録がそのまま<b>対米HACCP審査のエビデンス</b>になります。</div>
+    <div class="note" style="margin-top:8px; background:#e7f5ec; border-color:#bfe5cc;"><b>現場の負担は「実質マイナス」:</b>紙記録簿の記入・回収・転記・ファイリング(1日約60分)が丸ごとなくなり、記録は3タップ約10分に。<b>HACCP導入で現場作業を増やさない</b>ことを設計の最優先にします。</div>
+  </div>
+</div>
+
+<!-- ③ フロー -->
+<div class="page" id="p2">
+  <p style="margin-bottom:14px; font-size:14px; color:#556; text-align:center;">5部門の情報が1つの基盤でつながります。<b>一度入力した情報は二度と書き写しません。</b></p>
+  <div class="flow">
+    <div class="flowrow">
+      <div class="fbox"><b>① 仕入</b><small>・市場買付/検収の記録<br>・原料ロット番号を発行<br>・仕入先/単価の管理</small></div>
+      <div class="fbox"><b>② 製造/HACCP</b><small>・製造指示と実績<br>・CCP/SSOP記録(タブレット)<br>・原料→製品ロット紐づけ</small></div>
+      <div class="fbox"><b>③ 出荷</b><small>・出荷指示/ラベル発行<br>・出荷先×ロットの記録<br>・回収(リコール)時に即追跡</small></div>
+    </div>
+    <div class="arrowdown">↓ &nbsp; ↓ &nbsp; ↓</div>
+    <div class="hub"><b>共通データ基盤(kintone等クラウド)</b><small>受注・ロット・記録・請求がひとつにつながる/経営・現場みんなで見る</small></div>
+    <div class="arrowdown">↓ &nbsp; ↓</div>
+    <div class="flowrow">
+      <div class="fbox"><b>④ 販売</b><small>・受注/見積の管理<br>・受注が自動で製造計画へ<br>・顧客別の売上分析</small></div>
+      <div class="fbox"><b>⑤ 会計</b><small>・請求書を自動作成<br>・入金消込/原価把握<br>・会計ソフト(freee等)連携</small></div>
+      <div class="fbox" style="border-color:#1a8a3c;"><b style="color:#1a8a3c;">対米HACCP審査</b><small>・電子記録=審査エビデンス<br>・トレーサビリティ即応<br>・回収プログラムの実働化</small></div>
+    </div>
+  </div>
+  <div class="note"><b>例:回収(リコール)訓練</b> — 「6月10日出荷のはも開き」に問題が出た場合、ロット番号1つで「原料はいつどこから仕入れ、誰がいつ加熱し、どこへ何kg出荷したか」を<b>数分で</b>紙をめくらずに特定できます。これが対米HACCPで求められる水準です。</div>
+</div>
+
+<!-- ④ 商品群別の見える化 -->
+<div class="page" id="p3">
+  <p style="margin-bottom:14px; font-size:14px; color:#556; text-align:center;">自分の班の数字が毎日見えるから、<b>工夫の成果がすぐ表れる。</b>数値は2024-25年の実データです。</p>
+  <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div style="background:#0d4f8b; color:#fff; padding:12px 18px; font-weight:bold;">漬け丼(業務用中心)</div>
+      <table>
+        <tr><td style="color:#667; width:42%;">売上(2025年)</td><td><b>921万円</b></td></tr>
+        <tr><td style="color:#667;">前年比</td><td><b class="bad">-7%</b> <span style="font-size:12px; color:#667;">(前年991万)</span></td></tr>
+        <tr><td style="color:#667;">帳簿粗利率</td><td><b>100%</b> <span class="pill y">原価未登録</span></td></tr>
+        <tr><td style="color:#667;">主な販売先</td><td><b>うみから食堂</b> <span style="font-size:12px; color:#667;">568万</span></td></tr>
+        <tr><td style="color:#667;">歩留まり</td><td><span class="pill b">未計測 → システムで自動計測</span></td></tr>
+      </table>
+    </div>
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div style="background:#0d4f8b; color:#fff; padding:12px 18px; font-weight:bold;">干物・一夜干し</div>
+      <table>
+        <tr><td style="color:#667; width:42%;">売上(2025年)</td><td><b>819万円</b></td></tr>
+        <tr><td style="color:#667;">前年比</td><td><b class="bad">-27%</b> <span class="pill r">要注意</span> <span style="font-size:12px; color:#667;">(前年1,118万)</span></td></tr>
+        <tr><td style="color:#667;">帳簿粗利率</td><td><b>96.9%</b> <span class="pill y">原価未登録</span></td></tr>
+        <tr><td style="color:#667;">主な販売先</td><td><b>小浜海産物・UMIKARA</b></td></tr>
+        <tr><td style="color:#667;">歩留まり</td><td><span class="pill b">未計測 → システムで自動計測</span></td></tr>
+      </table>
+    </div>
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div style="background:#0d4f8b; color:#fff; padding:12px 18px; font-weight:bold;">業務用フィーレ</div>
+      <table>
+        <tr><td style="color:#667; width:42%;">売上(2025年)</td><td><b>777万円</b></td></tr>
+        <tr><td style="color:#667;">前年比</td><td><b class="ok">+104%</b> <span style="font-size:12px; color:#667;">(前年381万)</span></td></tr>
+        <tr><td style="color:#667;">帳簿粗利率</td><td><b>89.1%</b></td></tr>
+        <tr><td style="color:#667;">主な販売先</td><td><b>サンワード東京</b> <span style="font-size:12px; color:#667;">350万</span></td></tr>
+        <tr><td style="color:#667;">歩留まり</td><td><span class="pill b">未計測 → システムで自動計測</span></td></tr>
+      </table>
+    </div>
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div style="background:#0d4f8b; color:#fff; padding:12px 18px; font-weight:bold;">鮮魚・切身・漬け魚</div>
+      <table>
+        <tr><td style="color:#667; width:42%;">売上(2025年)</td><td><b>1,633万円</b></td></tr>
+        <tr><td style="color:#667;">前年比</td><td><b class="ok">+44%</b> <span style="font-size:12px; color:#667;">(前年1,137万)</span></td></tr>
+        <tr><td style="color:#667;">主な仕入(2025)</td><td><b>タコ 418万</b> <span style="font-size:12px; color:#667;">3,154kg/漁協</span></td></tr>
+        <tr><td style="color:#667;">主力商品</td><td><b>大中たこ</b> <span style="font-size:12px; color:#667;">479万・刺身用イカ 206万</span></td></tr>
+        <tr><td style="color:#667;">歩留まり</td><td><span class="pill b">未計測 → システムで自動計測</span></td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="note"><b>歩留まりは今、誰にも見えていない</b> — 現状は仕入kgと製品売上がつながっておらず計測不能。システムで原料→製品ロットが自動で紐づくと班ごとの歩留まりが毎日見え、「昨日より+1pt」が現場の共通言語に。月次の班別ふり返り・表彰にもそのまま使えます。</div>
+</div>
+
+<!-- ⑤ マネジメント -->
+<div class="page" id="p4">
+  <p style="margin-bottom:14px; font-size:14px; color:#556; text-align:center;">予算・実績・達成見込を1画面で。<b>気になる数字をクリックすると原因まで掘り下げ</b>られます(下の表の行を押してみてください)。数値は2024-25年の実データ。</p>
+  <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr));">
+    <div class="card"><div class="label">2025年 売上実績</div><div class="value">5,369<span style="font-size:16px;">万円</span></div><div class="sub">前年比 +10.8%(2024年 4,846万)</div></div>
+    <div class="card"><div class="label">2026年 予算(例)</div><div class="value">5,900<span style="font-size:16px;">万円</span></div><div class="sub">実績+10%で設定した例</div></div>
+    <div class="card" style="background:#e7f5ec;"><div class="label">達成見込</div><div class="value ok">自動算出</div><div class="sub">受注残+季節性(夏ピーク)から毎月更新</div></div>
+  </div>
+  <div class="section">
+    <h2>商品群別 前年比(クリックで深掘り)</h2>
+    <table>
+      <tr><th>商品群</th><th>2024年</th><th>2025年</th><th>前年比</th><th></th></tr>
+      <tr class="drill" onclick="toggle('d1')" style="cursor:pointer;"><td><b>鮮魚・切身・漬け魚</b></td><td>1,137万</td><td>1,633万</td><td><span class="pill g">+44%</span></td><td style="color:#0d4f8b;">▼ 詳細</td></tr>
+      <tr id="d1" style="display:none;"><td colspan="5" style="background:#f0f6fc; padding:14px 20px; font-size:13px; line-height:1.8;">
+        <b>主力:</b> 大中たこ 479万 / 刺身用イカ 206万。仕入はタコ 418万(3,154kg・高浜漁協)<br>
+        <b>示唆:</b> タコが売上の柱に成長。ただし原価未登録のため<b>本当の利益率は不明</b> → システムで仕入と自動で紐づけ
+      </td></tr>
+      <tr class="drill" onclick="toggle('d2')" style="cursor:pointer;"><td><b>干物・一夜干し</b></td><td>1,118万</td><td>819万</td><td><span class="pill r">-27%</span></td><td style="color:#0d4f8b;">▼ 詳細</td></tr>
+      <tr id="d2" style="display:none;"><td colspan="5" style="background:#fff5f5; padding:14px 20px; font-size:13px; line-height:1.8;">
+        <b>主力:</b> 桜干しさば 189万 / 桜干しあじ 97万。販売先は小浜海産物 166万・UMIKARA 145万・サニーマート 124万<br>
+        <b>問い:</b> 300万円減の原因は数量か単価か販売先か — <b>今のデータでは即答できません。</b>システムがあればこの行をもう1段掘るだけ<br>
+        <span style="color:#889;">※この「即答できない」状態こそが、今回の導入で解消したい課題です</span>
+      </td></tr>
+      <tr class="drill" onclick="toggle('d3')" style="cursor:pointer;"><td><b>漬け丼(業務用中心)</b></td><td>991万</td><td>921万</td><td><span class="pill y">-7%</span></td><td style="color:#0d4f8b;">▼ 詳細</td></tr>
+      <tr id="d3" style="display:none;"><td colspan="5" style="background:#fffbe6; padding:14px 20px; font-size:13px; line-height:1.8;">
+        <b>主力:</b> 業務用ミックス 183万 / ふくいサーモン 166万 / 若狭まはた 124万。販売先はうみから食堂 568万に集中<br>
+        <b>示唆:</b> 食堂依存度が高い → 外販(福福館 114万など)の拡大余地
+      </td></tr>
+      <tr class="drill" onclick="toggle('d4')" style="cursor:pointer;"><td><b>業務用フィーレ</b></td><td>381万</td><td>777万</td><td><span class="pill g">+104%</span></td><td style="color:#0d4f8b;">▼ 詳細</td></tr>
+      <tr id="d4" style="display:none;"><td colspan="5" style="background:#f0f6fc; padding:14px 20px; font-size:13px; line-height:1.8;">
+        <b>主力:</b> 若狭マハタフィーレ 180万+飛鳥II向け特別価格 169万<br>
+        <b>示唆:</b> 高単価の業務用販路が急成長。対米HACCP取得後の輸出候補にも最有力
+      </td></tr>
+    </table>
+  </div>
+  <div class="note"><b>経営会議が変わる</b> — 上の数字は全て実データですが、この集計には手作業が必要でした(しかも売上の88%で原価未登録)。システム導入後は毎月自動更新され、「干物-27%」のような異変をその場で原因まで掘り下げられます。</div>
+</div>
+
+<div class="footer">はもと加工場 販売・生産管理システム 完成イメージ(提案用モックアップ)/ 2026年7月 — ④⑤と月次売上は2024-25年実データ、①②の日次数値はサンプル</div>
+
+<script>
+function show(i,el){
+  document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',i===j));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+let buf='75.5';
+function key(k){
+  if(k==='C'){buf='';}
+  else{ if(buf==='75.5')buf=''; if(buf.length<5)buf+=k; }
+  document.getElementById('temp').textContent=buf||'0';
+  const v=parseFloat(buf);
+  const j=document.getElementById('judge');
+  if(!isNaN(v)&&v>=75){ j.style.background='#dcfce7'; j.style.color='#166534'; j.textContent='✔ 基準クリア(75℃以上・1分)'; }
+  else{ j.style.background='#fee2e2'; j.style.color='#991b1b'; j.textContent='✖ 基準未達!再加熱してください(責任者へ通知)'; }
+}
+function save(){ alert('記録しました。\n担当者:山田/時刻:自動記録\nロット:0704-A に紐づけ済み'); }
+function toggle(id){
+  const el=document.getElementById(id);
+  el.style.display = el.style.display==='none' ? 'table-row' : 'none';
+}
+</script>
+</body>
+</html>
