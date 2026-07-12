@@ -238,6 +238,7 @@ progress{width:100%;height:8px}
 if (location.protocol === "file:") document.write('<script src="pdf.worker.min.js"><\/script>');
 </script>
 <script src="data.js"></script>
+<script src="fishmap.js"></script>
 <script>
 "use strict";
 /* ================= 分類ルール ================= */
@@ -258,27 +259,30 @@ const SALE_RULES = [
   [/刺身|フィーレ|ﾌｨｰﾚ|フィレ|柵|切身|切り身|ドレス|げそ|あら|ロイン|うなぎ|穴子|えび|エビ|いか|イカ|たこ|タコ|サーモン|ぶり|ブリ|鯛|あじ|アジ|さば|サバ|鯖|さわら|サワラ|かれい|カレイ|しいら|シイラ|ヒラメ|ひらめ|すずき|ぐじ|はも|ハモ|まはた|マハタ|あさり|さざえ|サザエ|カキ|かき|鮭|ハギ|はたはた|いわし|鮮魚|活魚|甘鯛/, "鮮魚・切身・フィーレ"],
   [/フォーク|スプーン|ナイフ|ステッカー|紙袋|レジ袋|袋|箱|パック|チャーム|キーホルダー|シール|タオル|Tシャツ|エプロン|マスク|手袋|ラベル|のし|包装/, "雑貨・資材"],
 ];
+// 仕入の魚種分類は fishmap.js (TAKAHAMA_魚種名テーブル.xlsx 由来) を第一優先とし、
+// テーブル未登録の魚種のみ以下のキーワードで補完する(分類名はテーブルに合わせる)
 const PUR_RULES = [
-  [/たこ|タコ|蛸/, "タコ類"],
-  [/いか|イカ|するめ|スルメ|タルイカ|文甲|剣/, "イカ類"],
-  [/グヂ|グジ|ぐじ|甘鯛/, "アマダイ(グジ)"],
-  [/れんこ|レンコ|ちだい|チダイ|鯛|たい/, "タイ類"],
+  [/たこ|タコ|蛸/, "タコ"],
+  [/いか|イカ|するめ|スルメ|文甲|剣/, "イカ"],
+  [/グヂ|グジ|ぐじ/, "グヂ"],
+  [/れんこ|レンコ/, "レンコダイ"],
+  [/鯛|ちだい|チダイ/, "タイ"],
   [/ひらめ|ヒラメ|平め/, "ヒラメ"],
-  [/鰤|ぶり|ブリ|はまち|ハマチ|つばす|ツバス|わらさ|平政|勘八|大力/, "ブリ類"],
-  [/さごし|サゴシ|さわら|サワラ|ヤナギ/, "サワラ類"],
+  [/鰤|ぶり|ブリ|はまち/, "ブリ"],
+  [/つばす|ツバス/, "ツバス"],
+  [/平政|ヒラマサ/, "ヒラマサ"],
+  [/勘八|大力/, "カンパチ"],
+  [/さごし|サゴシ|ヤナギ/, "さごし"],
+  [/さわら|サワラ/, "サワラ"],
   [/あじ|アジ|鯵/, "アジ"],
   [/さば|サバ|鯖/, "サバ"],
   [/いわし|イワシ/, "イワシ"],
   [/シイラ|しいら|かみそり/, "シイラ"],
-  [/かれい|カレイ/, "カレイ類"],
-  [/サザエ|さざえ|あさり|アサリ|なまこ|カメノテ|貝/, "貝類ほか"],
-  [/えび|エビ|海老|かに|カニ/, "エビ・カニ"],
-  [/はも|ハモ|鱧|たかの口/, "ハモ"],
-  [/雑/, "雑魚"],
+  [/かれい|カレイ/, "カレイ"],
 ];
 function classify(name, rules){ for(const [re,g] of rules){ if(re.test(name)) return g; } return "その他"; }
 function normPName(n){
-  let s = n.replace(/\s+/g,"");
+  let s = n.replace(/\s+/g,"").replace(/\(/g,"（").replace(/\)/g,"）");
   s = s.replace(/[0-9０-９]{1,2}\/[0-9０-９]{1,2}分?$/,"").replace(/(朝分|夜分|朝)$/,"");
   return s || n;
 }
@@ -301,7 +305,8 @@ function buildData(){
   Object.values(u.pur).forEach(rows=>PUR.push(...rows));
   SAL = window.SALES_DATA.filter(r=>!sm.has(r.d.slice(0,7)));
   Object.values(u.sal).forEach(rows=>SAL.push(...rows));
-  for(const r of PUR){ r.np = normPName(r.n); r.g = r.t ? "消費税" : classify(r.np, PUR_RULES); r.m = r.d.slice(0,7); }
+  const fmap = window.PUR_MAP || {};
+  for(const r of PUR){ r.np = normPName(r.n); r.g = r.t ? "消費税" : (fmap[r.np] || classify(r.np, PUR_RULES)); r.m = r.d.slice(0,7); }
   for(const r of SAL){ r.g = classify(r.n, SALE_RULES); r.m = r.d.slice(0,7); }
   PUR.sort((a,b)=>a.d<b.d?-1:1); SAL.sort((a,b)=>a.d<b.d?-1:1);
 }
@@ -642,7 +647,7 @@ function renderDM(){
     </tbody></table>`;
   document.getElementById("dmRules").innerHTML =
     "<div style='margin-bottom:8px'><b>販売:</b> " + SALE_RULES.map(r=>`<span class="pill">${esc(r[1])}</span>`).join("") + "<span class='pill'>その他</span></div>" +
-    "<div><b>仕入:</b> " + PUR_RULES.map(r=>`<span class="pill">${esc(r[1])}</span>`).join("") + "<span class='pill'>その他</span></div>";
+    "<div><b>仕入:</b> 魚種名テーブル(" + Object.keys(window.PUR_MAP||{}).length + "種→" + new Set(Object.values(window.PUR_MAP||{})).size + "分類)を優先適用。未登録分のみキーワード補完: " + PUR_RULES.map(r=>`<span class="pill">${esc(r[1])}</span>`).join("") + "<span class='pill'>その他</span></div>";
 }
 
 function clearUploads(){
